@@ -2,38 +2,43 @@ import express from 'express';
 import cors from 'cors';
 
 const server = express();
+
 server.use(cors());
+server.use(express.json());
 
-// armazenamento de dados //
+// npx nodemon index.js
+// sudo killall -9 node
 
-const user = {
-    username: 'bobesponja',
-    avatar: "https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=70&strip=info"
-};
+const tweets = [];
+const users = [];
 
-const tweet = {
-    username: "bobesponja",
-    tweet: "eu amo o hub"
-};
-
-// POST //
-
-// /sign-up
-
-const logar = {
-    username: "bobesponja",
-    avatar: "https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=70&strip=info"
-};
-
-// /tweets
-
-const tweets = {
-    username: "bobesponja",
-    tweet: "eu amo o hub"
-};
-
-server.get("/hello", (request, response) => {
-    response.send("")
+server.post("/sign-up", (req, res) => {
+    const body = req.body;
+    users.push(body);
+    res.send("Ok");
 });
 
-server.listen(5000);
+server.get("/tweets", (req, res) => {
+
+    if (tweets.length <= 10) {
+        res.send([...tweets].reverse())
+    } else {
+        res.send([...tweets].reverse().splice(0, 10))
+    };
+});
+
+server.post("/tweets", (req, res) => {
+    const body = req.body;
+    const { username, tweet } = body
+    const { avatar } = users.find(name => name.username === username);
+
+    tweets.push({
+        username,
+        avatar,
+        tweet
+    });
+
+    res.send("Ok");
+});
+
+server.listen(5000, () => { console.log('Tô funcionando na porta 5000!') });
